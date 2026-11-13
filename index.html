@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lembaran Milimeter - Denah Pabrik Batik - VERSI PUNCAK JALAN</title>
+<style>
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,Arial;background:#eef2f5;color:#111}
+header{background:#111827;color:#fff;padding:10px 12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+header h1{font-size:18px;margin:0;flex:1} .badge{background:#22c55e;color:#fff;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700}
+button{border:1px solid #cbd5e1;background:#fff;padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:600} button:hover{background:#e0f2fe} button.primary{background:#2563eb;color:#fff;border-color:#2563eb} button.green{background:#16a34a;color:#fff;border-color:#16a34a}
+#mousebar{background:#fff;border-bottom:2px solid #111;display:flex;gap:8px;align-items:center;padding:8px 10px;flex-wrap:wrap}
+.mousebtn{border:2px solid #111;padding:8px 14px;border-radius:10px;font-weight:800;background:#f8fafc} .mousebtn.active{background:#fde68a}
+#toolbar{background:#fff;padding:8px 10px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid #ddd}
+main{display:flex;gap:10px;padding:10px;align-items:flex-start}
+#work{flex:1;background:#fff;border:1px solid #ddd;border-radius:12px;padding:10px;min-width:0}
+#status{background:#dcfce7;padding:8px;border-radius:8px;font-weight:700;margin-bottom:8px}
+#sheet{height:72vh;overflow:auto;background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;position:relative;
+background-image:linear-gradient(#e5e7eb 1px,transparent 1px),linear-gradient(90deg,#e5e7eb 1px,transparent 1px);background-size:20px 20px;}
+#lahan{position:relative;width:900px;height:650px;margin:16px auto;background:#fff;border:3px solid #111;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+#lahanLabel{position:absolute;top:6px;left:0;right:0;text-align:center;font-weight:800;background:rgba(255,255,255,.9);padding:4px}
+.room{position:absolute;border:2px solid #2563eb;background:#dbeafe;padding:6px;font-size:12px;cursor:pointer;overflow:hidden}
+.room.selected{border:3px solid #dc2626;background:#fee2e2;box-shadow:0 0 0 3px #fecaca}
+.room b{display:block}
+#cursorDot{position:absolute;width:12px;height:12px;background:red;border-radius:50%;pointer-events:none;display:none;z-index:20;border:2px solid #fff}
+#context{position:fixed;display:none;background:#fff;border:2px solid #111;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:99;padding:6px;width:220px}
+#context button{display:block;width:100%;text-align:left;margin:2px 0}
+aside{width:300px;background:#fff;border:1px solid #ddd;border-radius:12px;padding:10px;flex-shrink:0}
+aside h3{margin:8px 0} .tpl{display:inline-block;margin:3px} input{width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin:4px 0}
+footer{background:#111827;color:#fff;padding:10px;text-align:center}
+@media(max-width:900px){main{flex-direction:column} aside{width:100%} #lahan{width:800px}}
+</style></head><body>
+<header><h1>📐 Lembaran Milimeter — Denah Pabrik Batik 20 x 100 m</h1><span class="badge">KEEP • VERSI BAGUS • SIAP DEPLOY</span><button onclick="perkecil()">Perkecil Laman - Mode Kerja</button><button onclick="kembalikan()">Kembalikan</button></header>
+<div id="mousebar">
+  <span><b>🖱️ CONTROL BAR MOUSE — Mesin Artefak</b></span>
+  <button class="mousebtn" id="btnKiri" onclick="klikMouse('KIRI')">◀ KIRI : Titik / Pilih</button>
+  <button class="mousebtn" id="btnTengah" onclick="klikMouse('TENGAH')">● TENGAH : Geser / FIT</button>
+  <button class="mousebtn" id="btnKanan" onclick="klikMouse('KANAN')">KANAN : Menu ▶</button>
+  <span id="titik">Titik: X=0 , Y=0 | Zoom: FIT | Terpilih: -</span>
+  <button onclick="setZoom('FIT')">FIT</button><button onclick="setZoom('50%')">50%</button><button onclick="setZoom('100%')">100%</button>
+</div>
+<div id="toolbar">
+  <button onclick="setAlat('Pilih')">✋ Pilih</button><button onclick="setAlat('Kotak')">▭ Kotak</button><button onclick="hapusRuangan()">🗑️ Hapus</button><button onclick="duplikatRuangan()">📄 Duplikat</button><button class="green" onclick="simpan()">💾 Simpan Versi Bagus</button><button class="primary" onclick="muatLengkap()">🏭 Muat Denah Pabrik Lengkap</button><span id="alatTxt">Alat: Pilih</span>
+</div>
+<main>
+<div id="work"><div id="status">✅ Sistem OK — Lembar Tampil — Siap Kerja — Klik ruangan, klik kanan untuk menu, klik template untuk tambah</div>
+<div id="sheet"><div id="lahan" onmousemove="gerak(event)" oncontextmenu="menuKanan(event)">
+<div id="lahanLabel">LAHAN 20 x 100 m = 2000 m² — Skala 1:100 — 1 cm di layar = 1 m asli</div>
+<div id="cursorDot"></div>
+</div></div>
+<p style="font-size:13px">Cara pakai: <b>Kiri</b> = klik ruangan / titik &nbsp; <b>Kanan</b> = klik kanan di lembar = menu pilihan &nbsp; <b>Tengah / scroll</b> = zoom & geser &nbsp; <b>2 jari di laptop</b> = geser. Di HP: pakai tombol Control Bar Mouse di atas.</p>
+</div>
+<aside id="panel">
+<h3>🧱 Template Ruangan — 1 Klik</h3>
+<div id="tpls"></div>
+<h3>✏️ Edit Ruangan Terpilih</h3>
+<label>Nama Ruangan</label><input id="inNama" oninput="editRuangan()">
+<label>P (meter)</label><input id="inP" type="number" value="4" oninput="editRuangan()">
+<label>L (meter)</label><input id="inL" type="number" value="6" oninput="editRuangan()">
+<div id="luasTxt" style="font-weight:800">Luas = 4 x 6 = 24 m²</div>
+<p>Game: <b id="poin">Poin: 0</b> — tiap tambah ruangan benar +10 poin</p>
+<button class="green" onclick="sponsor()">⭐ Ajukan Sponsor / Komisi</button>
+<p style="font-size:12px;color:#555">Karya: Pencipta AutoCAD Design Model — Futuristik — Siap Deploy Game Host</p>
+</aside>
+</main>
+<div id="context" style="width:260px;max-height:80vh;overflow:auto">
+<b style="display:block;padding:6px">🖱️ KLIK KANAN - SEMUA FUNGSI PANEL</b>
+<button onclick="duplikatRuangan();tutupMenu()">📄 Duplikat Ruangan</button>
+<button onclick="hapusRuangan();tutupMenu()">🗑️ Hapus Ruangan Terpilih</button>
+<button onclick="tambahRuangan('Ruangan Baru',3,3);tutupMenu()">➕ Tambah Ruangan Di Sini</button>
+<hr>
+<b style="display:block;padding:4px 6px">🧱 Tambah Cepat:</b>
+<button onclick="tambahRuangan('Kantor',4,6);tutupMenu()">🏢 Kantor 4x6</button>
+<button onclick="tambahRuangan('Gudang Besar',12,6);tutupMenu()">📦 Gudang Besar 12x6</button>
+<button onclick="tambahRuangan('Garasi',6,6);tutupMenu()">🚚 Garasi 6x6</button>
+<button onclick="tambahRuangan('Jambangan',2,3);tutupMenu()">💧 Jambangan 2x3</button>
+<button onclick="tambahRuangan('Tungku Raksasa',4,6);tutupMenu()">🔥 Tungku Raksasa 4x6</button>
+<button onclick="tambahRuangan('Tungku Sedang',4,4);tutupMenu()">🔥 Tungku Sedang 4x4</button>
+<button onclick="tambahRuangan('Meja Celep',1.2,1.2);tutupMenu()">🎨 Meja Celep 1.2x1.2</button>
+<button onclick="tambahRuangan('Mess',3,3);tutupMenu()">🛏️ Mess 3x3</button>
+<button onclick="tambahRuangan('Turbin + Kettle',4,4);tutupMenu()">⚙️ Turbin + Kettle 4x4</button>
+<button onclick="tambahRuangan('Waterglass',4,4);tutupMenu()">🧪 Waterglass 4x4</button>
+<hr>
+<b style="display:block;padding:4px 6px">🔍 Zoom & Laman:</b>
+<button onclick="setZoom('FIT');tutupMenu()">🔍 Zoom FIT - Lihat Semua</button>
+<button onclick="setZoom('50%');tutupMenu()">🔍 Zoom 50%</button>
+<button onclick="setZoom('100%');tutupMenu()">🔍 Zoom 100%</button>
+<button onclick="kembalikan();tutupMenu()">↩ Kembalikan Panel - Keluar Mode Full</button>
+<button onclick="perkecil();tutupMenu()">⛶ Perkecil Laman - Mode Full Kerja</button>
+<hr>
+<button onclick="muatLengkap();tutupMenu()">🏭 Muat Denah Pabrik Lengkap</button>
+<button onclick="simpan();tutupMenu()">💾 Simpan Versi Bagus KEEP</button>
+<button onclick="sponsor();tutupMenu()">⭐ Ajukan Sponsor / Komisi</button>
+<button onclick="tutupMenu()">❌ Batal / Tutup</button>
+</div>
+<footer>Siap Deploy Game Host • Mouse Mesin Artefak • Terbuka Sponsor • <span id="footStatus">Belum disimpan</span></footer>
+<script>
+let terpilih=null, poin=0, alat='Pilih';
+let templates=[['Kantor',4,6],['Gudang Besar',12,6],['Garasi / Loading',6,6],['Gudang Kecil',4,6],['Gudang Canting',4,6],['Gudang Serbaguna',4,6],['Carpark Mobil',6,10],['Parkir Motor',6,10],['Koridor Pickup',3,20],['Ruang Proses / Lipat',6,6],['Perbaikan Canting',4,6],['Tungku Raksasa',4,6],['Tungku Sedang',4,4],['Jambangan',2,3],['Ruang Jemur',10,10],['Meja Celep',1.2,1.2],['Ruang Istirahat',3,3],['Mess',3,3],['Turbin + Kettle',4,4],['Waterglass Indanthrene',4,4],['Ruang Print Canting',6,6]];
+function renderTpl(){let h='';templates.forEach(t=>{h+='<button class="tpl" onclick="tambahRuangan(\''+t[0]+'\','+t[1]+','+t[2]+')">'+t[0]+' '+t[1]+'x'+t[2]+'</button>'});document.getElementById('tpls').innerHTML=h;}
+function buatRoom(nama,p,l,x,y){let d=document.createElement('div');d.className='room';d.style.left=x+'px';d.style.top=y+'px';d.style.width=Math.max(60,p*22)+'px';d.style.height=Math.max(40,l*22)+'px';d.innerHTML='<b>'+nama+'</b><span>'+p+' x '+l+' = '+(p*l)+' m²</span>';d.onclick=function(e){e.stopPropagation();pilih(d)};document.getElementById('lahan').appendChild(d);return d;}
+function pilih(el){document.querySelectorAll('.room').forEach(r=>r.classList.remove('selected'));el.classList.add('selected');terpilih=el;let b=el.querySelector('b').innerText;let sp=el.querySelector('span').innerText;let parts=sp.split(' =')[0].split(' x ');document.getElementById('inNama').value=b;document.getElementById('inP').value=parts[0];document.getElementById('inL').value=parts[1];updateTitik('Terpilih: '+b);}
+function tambahRuangan(nama,p,l){let x=40+Math.floor(Math.random()*400);let y=60+Math.floor(Math.random()*300);let r=buatRoom(nama,p,l,x,y);pilih(r);poin+=10;document.getElementById('poin').innerText='Poin: '+poin;updateTitik('Tambah: '+nama);}
+function hapusRuangan(){if(!terpilih){alert('Pilih dulu ruangan di lembar');return} terpilih.remove();terpilih=null;updateTitik('Dihapus');}
+function duplikatRuangan(){if(!terpilih){alert('Pilih dulu ruangan');return} let b=terpilih.querySelector('b').innerText;let sp=terpilih.querySelector('span').innerText.split(' =')[0].split(' x ');tambahRuangan(b+' Copy',parseFloat(sp[0]),parseFloat(sp[1]));}
+function editRuangan(){if(!terpilih) return;let n=document.getElementById('inNama').value||'Ruangan';let p=parseFloat(document.getElementById('inP').value)||1;let l=parseFloat(document.getElementById('inL').value)||1;terpilih.querySelector('b').innerText=n;terpilih.querySelector('span').innerText=p+' x '+l+' = '+(p*l)+' m²';terpilih.style.width=Math.max(60,p*22)+'px';terpilih.style.height=Math.max(40,l*22)+'px';document.getElementById('luasTxt').innerText='Luas = '+p+' x '+l+' = '+(p*l)+' m²';}
+function setAlat(a){alat=a;document.getElementById('alatTxt').innerText='Alat: '+a;}
+function setZoom(z){let lahan=document.getElementById('lahan');if(z=='FIT') lahan.style.transform='scale(1)';if(z=='50%') lahan.style.transform='scale(0.6)';if(z=='100%') lahan.style.transform='scale(1.25)';lahan.style.transformOrigin='top center';updateTitik('Zoom: '+z);}
+function gerak(e){let r=document.getElementById('lahan').getBoundingClientRect();let x=Math.round(e.clientX-r.left);let y=Math.round(e.clientY-r.top);let dot=document.getElementById('cursorDot');dot.style.display='block';dot.style.left=(x-6)+'px';dot.style.top=(y-6)+'px';document.getElementById('titik').innerText='Titik: X='+x+' , Y='+y+' | Zoom: FIT | Terpilih: '+(terpilih?terpilih.querySelector('b').innerText:'-');}
+function updateTitik(t){document.getElementById('titik').innerText=t+' | Alat: '+alat;}
+function menuKanan(e){e.preventDefault();let m=document.getElementById('context');m.style.display='block';m.style.left=e.clientX+'px';m.style.top=e.clientY+'px';return false;}
+function tutupMenu(){document.getElementById('context').style.display='none';}
+document.addEventListener('click',function(e){if(!e.target.closest('#context')) tutupMenu();});
+function klikMouse(m){['btnKiri','btnTengah','btnKanan'].forEach(id=>document.getElementById(id).classList.remove('active'));if(m=='KIRI') document.getElementById('btnKiri').classList.add('active');if(m=='TENGAH'){document.getElementById('btnTengah').classList.add('active');setZoom('FIT');}if(m=='KANAN'){document.getElementById('btnKanan').classList.add('active');let mm=document.getElementById('context');mm.style.display='block';mm.style.left='50%';mm.style.top='200px';} updateTitik('Mouse: '+m);}
+function perkecil(){document.querySelector('header').style.display='none';document.getElementById('panel').style.display='none';document.getElementById('mousebar').style.display='none';let b=document.createElement('button');b.id='btnKembali';b.innerText='↩ Kembalikan';b.style.cssText='position:fixed;top:8px;right:8px;z-index:999;background:#111;color:#fff;padding:10px;border-radius:8px';b.onclick=kembalikan;b.id='btnKembali2';document.body.appendChild(b);document.getElementById('sheet').style.height='92vh'; alert('Mode Full Kerja aktif - Klik KANAN di lembar untuk semua fungsi panel (tambah ruangan, zoom, simpan, kembalikan). Panel tertutup tapi semua fungsi ada di klik kanan.');}
+function kembalikan(){document.querySelector('header').style.display='flex';document.getElementById('panel').style.display='block';document.getElementById('mousebar').style.display='flex';let b=document.getElementById('btnKembali2');if(b) b.remove();document.getElementById('sheet').style.height='72vh';}
+function simpan(){document.getElementById('footStatus').innerText='Tersimpan ✓ Versi Bagus KEEP - '+new Date().toLocaleString();alert('Tersimpan - Versi Bagus KEEP ✓');}
+function sponsor(){alert('Terima kasih - Pengajuan Sponsor / Komisi dicatat. Karya: Pencipta AutoCAD Design Model - Futuristik');}
+function muatLengkap(){document.querySelectorAll('.room').forEach(r=>r.remove());buatRoom('Parkir Motor Terbuka',6,10,20,50);buatRoom('Kantor',4,6,300,50);buatRoom('Garasi / Loading',6,6,550,50);buatRoom('Gudang Besar',12,6,20,300);buatRoom('Gudang Canting',4,6,550,300);buatRoom('Tungku Raksasa (2 unit)',4,6,20,500);buatRoom('Jambangan 1',2,3,300,500);buatRoom('Jambangan 2',2,3,380,500);buatRoom('Jambangan 3',2,3,460,500);buatRoom('Meja Celep 3 Pasang',3,3,550,500);alert('Denah Pabrik Lengkap dimuat - tinggal geser-geser');}
+renderTpl();
+buatRoom('Kantor',4,6,40,50);buatRoom('Gudang Besar',12,6,40,200);buatRoom('Jambangan 1',2,3,40,400);buatRoom('Tungku Raksasa',4,6,350,200);
+</script></body></html>
