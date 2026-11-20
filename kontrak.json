@@ -1,9 +1,13 @@
 {
-  "pihak": "Owner Bisnis Pabrik Batik / Konglomerat Batik / Sritex SAJA",
-  "pasar": "TIDAK ADA pasar umum / retail / publik",
-  "produk": "Pabrik Batik Autonomous - Game Simulasi + SAAS SCM",
-  "lisensi": "Owner Only",
-  "ruang": "20x100m Milimeter Blok",
-  "generator": "Turbin DC 1.5kW",
-  "safety": "Pluit Safety Guard + MCB + IPAL"
+  "perusahaan": "aichaliveret company — aichaliveret by meta.ai",
+  "produk": "Practical Application — SaaS System for Market Intelligence & Decision Support",
+  "pihak": "Owner Bisnis Pabrik Batik / Konglomerat Batik / Sritex, Masyarakat Pandai, Pejabat Daerah, Pejabat Negara",
+  "pasar": "TIDAK ADA pasar umum / retail",
+  "modul": [
+    "Neural",
+    "Classic Podcast",
+    "Teknis Pabrik Information",
+    "Laporan & Akuntabilitas"
+  ],
+  "etika": "Tidak memberikan instruksi beli/jual. Hanya skenario, tingkat keyakinan, risiko."
 }
